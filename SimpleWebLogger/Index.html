@@ -1,0 +1,29 @@
+﻿<html>
+    <head><title>Simple Web Logger</title></head>
+    <body>
+        <div ng-app="myApp">
+            <div ng-controller="myCtrl">
+                reply:{{reply}}
+
+                <form ng-submit="log()">
+                    Level:<input ng-model="level" />
+                    Message:<input ng-model="message" />
+                    <button type="submit">log</button>
+                </form>
+
+
+                <p>
+                    <a class="btn btn-default" href="/api/log">See logs &raquo;</a>
+                </p>
+
+                <p>
+                    <button ng-click="deleteLog()">
+                        Delete logs
+                    </button>
+                </p>
+            </div>
+        </div>
+        <script src="angular.min.js"></script>
+        <script src="main.js"></script>
+    </body>
+</html>
