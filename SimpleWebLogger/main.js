@@ -14,7 +14,7 @@ angular.module('simpleLogger', [])
                 url: '/api/log',
                 data: $scope.message,
                 headers: {
-                    'X-Logger': $scope.logger,  // (optional) <debug|info|warn|error>  default:debug
+                    'X-Logger': $scope.logger, // (optional) <debug|info|warn|error>  default:debug
                     'X-LogLevel': $scope.level // (optional) <any-string>             default:main
                 }
             }).success(function(data) {
