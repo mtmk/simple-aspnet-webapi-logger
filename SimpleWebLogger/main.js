@@ -1,6 +1,6 @@
 ﻿
-angular.module('myApp', [])
-    .controller('myCtrl', function($scope, $http) {
+angular.module('simpleLogger', [])
+    .controller('logCtrl', function($scope, $http) {
 
         $scope.message = '';
         $scope.reply = '<server reply comes here>';
@@ -20,12 +20,7 @@ angular.module('myApp', [])
             });
         };
 
-        $scope.bla = function () {
-            alert('BLA');
-        };
-
         $scope.deleteLog = function() {
-            alert('DEL');
             $http({
                 method: 'DELETE',
                 url: '/api/log',
