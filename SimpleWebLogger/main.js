@@ -4,23 +4,27 @@ angular.module('simpleLogger', [])
 
         $scope.message = '';
         $scope.reply = '<server reply comes here>';
-        $scope.level = 'DEBUG';
+        $scope.level = 'debug';
+        $scope.logger = 'main';
 
-        $scope.log = function() {
+        $scope.log = function () {
+            $scope.reply = 'thinking..';
             $http({
                 method: 'POST',
                 url: '/api/log',
                 data: $scope.message,
                 headers: {
-                    'Content-Type': 'text/plain',
-                    'X-LogLevel': $scope.level
+                    'X-Logger': $scope.logger,  // (optional) <debug|info|warn|error>  default:debug
+                    'X-LogLevel': $scope.level // (optional) <any-string>             default:main
                 }
             }).success(function(data) {
                 $scope.reply = data;
+                $scope.message = '';
             });
         };
 
         $scope.deleteLog = function() {
+            $scope.reply = 'thinking..';
             $http({
                 method: 'DELETE',
                 url: '/api/log',

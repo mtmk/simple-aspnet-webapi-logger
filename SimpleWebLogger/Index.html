@@ -1,28 +1,52 @@
 ﻿<html>
-    <head><title>Simple Web Logger</title></head>
-    <body>
-        
-        <div ng-app="simpleLogger">
-            <div ng-controller="logCtrl">
-                
-                <p>reply:{{reply}}</p>
+<head>
+    <title>Simple Web Logger</title>
+</head>
+<body>
 
-                <form ng-submit="log()">
-                    Level (debug|info|warn|error): <input ng-model="level" /><br/>
-                    Message: <input ng-model="message" /><br/>
-                    <button type="submit">Log</button>
-                </form>
+    <div ng-app="simpleLogger">
+        <pre ng-controller="logCtrl">
+<h2>Simple Web Logger</h2>
+Response: {{reply}}
 
-                <p><a href="/api/log">See logs &raquo;</a></p>
+Level  (optional) &lt;debug|info|warn|error&gt;: <input ng-model="level" />
+Logger (optional) &lt;any string&gt;:            <input ng-model="logger" />
 
-                <p><button ng-click="deleteLog()">Delete Logs</button></p>
+Message:
+<textarea rows="4" cols="66" ng-model="message"></textarea>
+<button ng-click="log()">Log</button>
 
-                <p><a href="main.js">See main.js to learn how to use the API &raquo;</a></p>
+<a href="/api/log">See logs &raquo;</a>
 
-            </div>
-        </div>
+<button ng-click="deleteLog()">Delete Logs</button>
 
-        <script src="angular.min.js"></script>
-        <script src="main.js"></script>
-    </body>
+<h3>Specification:</h3>
+--------------------------------------------------------------------
+Add log entry
+--------------------------------------------------------------------
+POST /api/log
+X-Logger: &lt;any-string&gt; (optional - default:main)
+X-LogLevel: &lt;debug|info|warn|error&gt; (optional - default:debug)
+
+&lt;any-string-as-message&gt;
+---
+200 OK
+OK &lt;date-time&gt;
+
+--------------------------------------------------------------------
+Retrieve all log entries
+--------------------------------------------------------------------
+GET /api/log
+---
+200 OK
+&lt;log-entries-as-JSON-array&gt;
+
+<a href="main.js">See main.js for an example of how to use the API &raquo;</a>
+
+        </pre>
+    </div>
+
+    <script src="angular.min.js"></script>
+    <script src="main.js"></script>
+</body>
 </html>

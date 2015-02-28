@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Channels;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Hosting;
 using System.Web.Http;
 using log4net;
@@ -12,45 +13,58 @@ namespace SimpleWebLogger.Controllers
 {
     public class LogController : ApiController
     {
-        private static readonly ILog Log = LogManager.GetLogger("client.logs");
 
         public async Task<string> Post()
         {
             string message = await Request.Content.ReadAsStringAsync();
 
-            IEnumerable<string> xLogLevel;
-            Request.Headers.TryGetValues("X-LogLevel", out xLogLevel);
+            string logger = GetHeaderOrDefault("X-Logger", "main");
+            string logLevel = GetHeaderOrDefault("X-LogLevel", "debug");
 
-            string logLevel = "DEBUG";
+            ILog log = LogManager.GetLogger("client." + logger);
 
-            if (xLogLevel != null)
-            {
-                logLevel = (xLogLevel.FirstOrDefault() ?? "DEBUG").ToUpperInvariant();
-            }
+            if (logLevel == "error") log.Error(message);
+            else if (logLevel == "warn") log.Warn(message);
+            else if (logLevel == "info") log.Info(message);
+            else log.Debug(message);
 
-            if (logLevel.Contains("ERROR"))
-            {
-                Log.Error(message);
-            }
-            else if (logLevel.Contains("WARN"))
-            {
-                Log.Warn(message);
-            }
-            else if (logLevel.Contains("INFO"))
-            {
-                Log.Info(message);
-            }
-            else
-            {
-                Log.Debug(message);
-            }
-
-            return "OK";
+            return "OK " + DateTime.Now;
         }
 
-        public string[] Get()
+        string GetHeaderOrDefault(string name, string defaultValue)
         {
-            return File.ReadAllLines(HostingEnvironment.MapPath("~/logs/client.log"));
+            IEnumerable<string> xLogLevel;
+            Request.Headers.TryGetValues(name, out xLogLevel);
+
+            string value = defaultValue;
+
+            if (xLogLevel != null)
+                value = xLogLevel.FirstOrDefault() ?? defaultValue;
+
+            return value.Trim().ToLowerInvariant();
+        }
+
+        public IEnumerable<string> Get()
+        {
+            var entry = new StringBuilder();
+
+            foreach (var line in File.ReadAllLines(HostingEnvironment.MapPath("~/logs/client.log")))
+            {
+                //2015-02-28 14:05:25,099
+                if (Regex.IsMatch(line, @"^\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d,\d{3}\s"))
+                {
+                    if (entry.Length > 0)
+                    {
+                        yield return entry.ToString();
+                        entry.Clear();
+                    }
+                }
+
+                entry.AppendLine(line);
+            }
+
+            if (entry.Length > 0)
+                yield return entry.ToString();
         }
 
         public string Delete()
